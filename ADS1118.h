@@ -63,61 +63,64 @@ public:
 	void setInputSelected(uint8_t input);					   ///< Setting the inputs to be adquired in the config register.
 															   // Input multiplexer configuration selection for bits "MUX"
 	// Differential inputs
-	const uint8_t DIFF_0_1 = 0b000; ///< Differential input: Vin=A0-A1
-	const uint8_t DIFF_0_3 = 0b001; ///< Differential input: Vin=A0-A3
-	const uint8_t DIFF_1_3 = 0b010; ///< Differential input: Vin=A1-A3
-	const uint8_t DIFF_2_3 = 0b011; ///< Differential input: Vin=A2-A3
-									// Single ended inputs
-	const uint8_t AIN_0 = 0b100;	///< Single ended input: Vin=A0
-	const uint8_t AIN_1 = 0b101;	///< Single ended input: Vin=A1
-	const uint8_t AIN_2 = 0b110;	///< Single ended input: Vin=A2
-	const uint8_t AIN_3 = 0b111;	///< Single ended input: Vin=A3
-	union Config configRegister;	///< Config register
+	static const uint8_t DIFF_0_1 = 0b000; ///< Differential input: Vin=A0-A1
+	static const uint8_t DIFF_0_3 = 0b001; ///< Differential input: Vin=A0-A3
+	static const uint8_t DIFF_1_3 = 0b010; ///< Differential input: Vin=A1-A3
+	static const uint8_t DIFF_2_3 = 0b011; ///< Differential input: Vin=A2-A3
+										   // Single ended inputs
+	static const uint8_t AIN_0 = 0b100;	   ///< Single ended input: Vin=A0
+	static const uint8_t AIN_1 = 0b101;	   ///< Single ended input: Vin=A1
+	static const uint8_t AIN_2 = 0b110;	   ///< Single ended input: Vin=A2
+	static const uint8_t AIN_3 = 0b111;	   ///< Single ended input: Vin=A3
+	union Config configRegister;		   ///< Config register
 
 	// Bit constants
-	const uint32_t SCLK = 500000; ///< ADS1118 SCLK frequency: 4000000 Hz Maximum for ADS1118
+	static const uint32_t SCLK = 1000000; ///< ADS1118 SCLK frequency: 4000000 Hz Maximum for ADS1118
 
 	// Used by "SS" bit
-	const uint8_t START_NOW = 1; ///< Start of conversion in single-shot mode
+	static const uint8_t START_NOW = 1; ///< Start of conversion in single-shot mode
 
 	// Used by "TS_MODE" bit
-	const uint8_t ADC_MODE = 0;	 ///< External (inputs) voltage reading mode
-	const uint8_t TEMP_MODE = 1; ///< Internal temperature sensor reading mode
+	static const uint8_t ADC_MODE = 0;	///< External (inputs) voltage reading mode
+	static const uint8_t TEMP_MODE = 1; ///< Internal temperature sensor reading mode
 
 	// Used by "MODE" bit
-	const uint8_t CONTINUOUS = 0;  ///< Continuous conversion mode
-	const uint8_t SINGLE_SHOT = 1; ///< Single-shot conversion and power down mode
+	static const uint8_t CONTINUOUS = 0;  ///< Continuous conversion mode
+	static const uint8_t SINGLE_SHOT = 1; ///< Single-shot conversion and power down mode
 
 	// Used by "PULL_UP_EN" bit
-	const uint8_t DOUT_PULLUP = 1;	  ///< Internal pull-up resistor enabled for DOUT ***DEFAULT
-	const uint8_t DOUT_NO_PULLUP = 0; ///< Internal pull-up resistor disabled
+	static const uint8_t DOUT_PULLUP = 1;	 ///< Internal pull-up resistor enabled for DOUT ***DEFAULT
+	static const uint8_t DOUT_NO_PULLUP = 0; ///< Internal pull-up resistor disabled
 
 	// Used by "NOP" bits
-	const uint8_t VALID_CFG = 0b01;	   ///< Data will be written to Config register
-	const uint8_t NO_VALID_CFG = 0b00; ///< Data won't be written to Config register
+	static const uint8_t VALID_CFG = 0b01;	  ///< Data will be written to Config register
+	static const uint8_t NO_VALID_CFG = 0b00; ///< Data won't be written to Config register
 
 	// Used by "Reserved" bit
-	const uint8_t RESERVED = 1; ///< Its value is always 1, reserved
+	static const uint8_t RESERVED = 1; ///< Its value is always 1, reserved
 
 	/*Full scale range (FSR) selection by "PGA" bits.
 	 [Warning: this could increase the noise and the effective number of bits (ENOB). See tables above]*/
-	const uint8_t FSR_6144 = 0b000; ///< Range: ±6.144 v. LSB SIZE = 187.5μV
-	const uint8_t FSR_4096 = 0b001; ///< Range: ±4.096 v. LSB SIZE = 125μV
-	const uint8_t FSR_2048 = 0b010; ///< Range: ±2.048 v. LSB SIZE = 62.5μV ***DEFAULT
-	const uint8_t FSR_1024 = 0b011; ///< Range: ±1.024 v. LSB SIZE = 31.25μV
-	const uint8_t FSR_0512 = 0b100; ///< Range: ±0.512 v. LSB SIZE = 15.625μV
-	const uint8_t FSR_0256 = 0b111; ///< Range: ±0.256 v. LSB SIZE = 7.8125μV
+	static const uint8_t FSR_6144 = 0b000; ///< Range: ±6.144 v. LSB SIZE = 187.5μV
+	static const uint8_t FSR_4096 = 0b001; ///< Range: ±4.096 v. LSB SIZE = 125μV
+	static const uint8_t FSR_2048 = 0b010; ///< Range: ±2.048 v. LSB SIZE = 62.5μV ***DEFAULT
+	static const uint8_t FSR_1024 = 0b011; ///< Range: ±1.024 v. LSB SIZE = 31.25μV
+	static const uint8_t FSR_0512 = 0b100; ///< Range: ±0.512 v. LSB SIZE = 15.625μV
+	static const uint8_t FSR_0256 = 0b111; ///< Range: ±0.256 v. LSB SIZE = 7.8125μV
 
 	/*Sampling rate selection by "DR" bits.
 	[Warning: this could increase the noise and the effective number of bits (ENOB). See tables above]*/
-	const uint8_t RATE_8SPS = 0b000;   ///< 8 samples/s, Tconv=125ms
-	const uint8_t RATE_16SPS = 0b001;  ///< 16 samples/s, Tconv=62.5ms
-	const uint8_t RATE_32SPS = 0b010;  ///< 32 samples/s, Tconv=31.25ms
-	const uint8_t RATE_64SPS = 0b011;  ///< 64 samples/s, Tconv=15.625ms
-	const uint8_t RATE_128SPS = 0b100; ///< 128 samples/s, Tconv=7.8125ms
-	const uint8_t RATE_250SPS = 0b101; ///< 250 samples/s, Tconv=4ms
-	const uint8_t RATE_475SPS = 0b110; ///< 475 samples/s, Tconv=2.105ms
-	const uint8_t RATE_860SPS = 0b111; ///< 860 samples/s, Tconv=1.163ms
+	static const uint8_t RATE_8SPS = 0b000;	  ///< 8 samples/s, Tconv=125ms
+	static const uint8_t RATE_16SPS = 0b001;  ///< 16 samples/s, Tconv=62.5ms
+	static const uint8_t RATE_32SPS = 0b010;  ///< 32 samples/s, Tconv=31.25ms
+	static const uint8_t RATE_64SPS = 0b011;  ///< 64 samples/s, Tconv=15.625ms
+	static const uint8_t RATE_128SPS = 0b100; ///< 128 samples/s, Tconv=7.8125ms
+	static const uint8_t RATE_250SPS = 0b101; ///< 250 samples/s, Tconv=4ms
+	static const uint8_t RATE_475SPS = 0b110; ///< 475 samples/s, Tconv=2.105ms
+	static const uint8_t RATE_860SPS = 0b111; ///< 860 samples/s, Tconv=1.163ms
+
+	void setCSDelay(uint16_t delay) { csDelay = delay; } // Setter for CS delay
+	uint16_t csDelay = 100;								 // Default CS delay in microseconds
 
 private:
 #if defined(ESP32)

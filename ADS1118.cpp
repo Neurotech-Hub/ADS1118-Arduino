@@ -177,11 +177,20 @@ bool ADS1118::getMilliVoltsNoWait(uint8_t pin_drdy, double &volts)
 uint16_t ADS1118::getADCValue(uint8_t inputs)
 {
     uint16_t value;
-    byte dataMSB, dataLSB, configMSB, configLSB, count = 0;
-    if (lastSensorMode == ADC_MODE) // Lucky you! We don't have to read twice the sensor
+    byte dataMSB, dataLSB, configMSB, configLSB;
+    byte count = 0;
+
+    if (lastSensorMode == ADC_MODE)
         count = 1;
     else
-        configRegister.bits.sensorMode = ADC_MODE; // Sorry but we will have to read twice the sensor
+        configRegister.bits.sensorMode = ADC_MODE;
+
+    // Set START bit for Single-Shot mode
+    if (configRegister.bits.operatingMode == SINGLE_SHOT)
+    {
+        configRegister.bits.singleStart = START_NOW;
+    }
+
     configRegister.bits.mux = inputs;
     do
     {
@@ -189,6 +198,7 @@ uint16_t ADS1118::getADCValue(uint8_t inputs)
         pSpi->beginTransaction(SPISettings(SCLK, MSBFIRST, SPI_MODE1));
 #endif
         digitalWrite(cs, LOW);
+        delayMicroseconds(csDelay);
 #if defined(__AVR__) || defined(ARDUINO_ARCH_SAMD)
         dataMSB = SPI.transfer(configRegister.byte.msb);
         dataLSB = SPI.transfer(configRegister.byte.lsb);
@@ -200,16 +210,17 @@ uint16_t ADS1118::getADCValue(uint8_t inputs)
         configMSB = pSpi->transfer(configRegister.byte.msb);
         configLSB = pSpi->transfer(configRegister.byte.lsb);
 #endif
-
         digitalWrite(cs, HIGH);
 #if defined(ESP32)
         pSpi->endTransaction();
 #endif
-        for (int i = 0; i < CONV_TIME[configRegister.bits.rate]; i++) // Lets wait the conversion time
+
+        for (int i = 0; i < CONV_TIME[configRegister.bits.rate]; i++)
             delayMicroseconds(1000);
         count++;
-    } while (count <= 1); // We make two readings because the second reading is the ADC conversion.
-    DEBUG_GETADCVALUE(configRegister); // Debug this method: print the config register in the Serial port
+    } while (count <= 1);
+
+    lastSensorMode = configRegister.bits.sensorMode; // Update the last mode
     value = (dataMSB << 8) | (dataLSB);
     return value;
 }
@@ -224,17 +235,19 @@ double ADS1118::getMilliVolts(uint8_t inputs)
     float volts;
     float fsr = pgaFSR[configRegister.bits.pga];
     uint16_t value;
+
     value = getADCValue(inputs);
+
     if (value >= 0x8000)
     {
         value = ((~value) + 1); // Applying binary twos complement format
-        volts = ((float)(value * fsr / 32768) * -1);
+        volts = -1.0 * (float)value * fsr / 32768.0;
     }
     else
     {
-        volts = (float)(value * fsr / 32768);
+        volts = (float)value * fsr / 32768.0;
     }
-    return volts * 1000;
+    return volts * 1000.0;
 }
 
 /**
@@ -293,7 +306,9 @@ double ADS1118::getTemperature()
 #if defined(ESP32)
         pSpi->endTransaction();
 #endif
-        for (int i = 0; i < CONV_TIME[configRegister.bits.rate]; i++) // Lets wait the conversion time
+        delayMicroseconds(10); // Try 10µs minimum CS HIGH time
+
+        for (int i = 0; i < CONV_TIME[configRegister.bits.rate]; i++)
             delayMicroseconds(1000);
         count++;
     } while (count <= 1); // We make two readings because the second reading is the temperature.
